@@ -1,4 +1,4 @@
-(lang dune 2.1)
+(lang dune 3.20)
 
 (name pg_query)
 

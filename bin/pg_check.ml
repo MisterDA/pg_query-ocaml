@@ -59,7 +59,7 @@ let files =
   let doc = "A list of files to parse. If no files are provided, reads from stdin." in
   Arg.(value & pos_all non_dir_file ["-"] & info [] ~docv:"FILE(S)" ~doc)
 
-let cmd = Cmd.v info files
+let cmd = Cmd.v info Term.(const do_parse $ files)
 
 let () = match Cmd.eval_value cmd with
 | Ok _ -> exit 0
