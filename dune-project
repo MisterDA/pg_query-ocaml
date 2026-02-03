@@ -1,4 +1,4 @@
-(lang dune 2.0)
+(lang dune 2.1)
 
 (name pg_query)
 
@@ -28,10 +28,16 @@
  (depends
   (ocaml
    (>= 4.07))
-  (dune
-   (>= 2.0))
-  cmdliner
+  (ocaml
+   (and
+    (< 5.0)
+    (or
+     (= arch x86_32)
+     (= arch arm32))))
+  (cmdliner
+   (>= 1.1.0))
   ctypes
-  ctypes-foreign
+  (ctypes-foreign
+   (>= 0.21.1))
   ppx_deriving
   (alcotest :with-test)))
