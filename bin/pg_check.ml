@@ -45,7 +45,7 @@ let info =
   ]
   in
   Cmd.info "pg_check" 
-    ~version:"0.9.6"
+    ~version:"%%VERSION%%"
     ~doc
     ~exits:Cmd.[
       Exit.info 0 ~doc:"if all files were parsed successfully.";

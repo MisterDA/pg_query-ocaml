@@ -2,8 +2,6 @@
 
 (name pg_query)
 
-(version 0.9.8)
-
 (source
  (github roddyyaga/pg_query-ocaml))
 
