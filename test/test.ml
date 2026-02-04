@@ -12,30 +12,34 @@ end
 
 module Parse = struct
   let success () =
-    Alcotest.(check @@ bool) "raw_parse success" true (
-      match Pg_query.parse "INSERT INTO users (name, email) VALUES (?, ?) RETURNING id" with
+    Alcotest.(check @@ bool) "parse success" true (
+      match Pg_query.parse "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id" with
       | Ok _ -> true
-      | Error _ -> false
+      | Error e ->
+        prerr_endline e;
+        false
     )
 
   let error () =
-    Alcotest.(check @@ bool) "raw_parse success" true (
-      match Pg_query.parse "INSERT INTO users (name, email) VALUES ?, ? RETURNING id" with
+    Alcotest.(check @@ bool) "parse success" true (
+      match Pg_query.parse "INSERT INTO users (name, email) VALUES $1, $2 RETURNING id" with
       | Error _ -> true
-      | Ok _ -> false
+      | Ok e ->
+        prerr_endline e;
+        false
     )
 end
 
 let () = Alcotest.run "pg_query" [
   (
-    "parse_raw", 
+    "parse_raw",
     [
       ("returns no error on correct query", `Quick, Parse_raw.success);
       ("returns an error on incorrect query", `Quick, Parse_raw.error);
     ]
   );
   (
-    "parse", 
+    "parse",
     [
       ("returns no error on correct query", `Quick, Parse.success);
       ("returns an error on incorrect query", `Quick, Parse.error);
