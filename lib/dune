@@ -5,10 +5,9 @@
 (rule
  (deps
   (:conf %{ocaml_where}/Makefile.config))
- (target arcmd)
  (action
   (with-stdout-to
-   %{target}
+   arcmd
    (bash "grep '^ARCMD=' %{conf} | cut -d'=' -f2"))))
 
 (rule
@@ -17,6 +16,13 @@
    jobs
    ; conservative number of concurrent jobs
    (bash "opam var jobs 2>/dev/null || echo 2"))))
+
+(rule
+ (action
+  (with-stdout-to
+   makecmd
+   ; libpg_query requires GNU Make (doesn't build with BSD Make)
+   (bash "command -v gmake || command -v make"))))
 
 (rule
  (deps
@@ -28,7 +34,7 @@
     (chdir
      libpg_query
      (run
-      make
+      "%{read-lines:makecmd}"
       -j%{read-lines:jobs}
       build
       "CC=%{ocaml-config:c_compiler}"
