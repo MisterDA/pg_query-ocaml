@@ -45,7 +45,7 @@ let info =
   ]
   in
   Cmd.info "pg_check" 
-    ~version:"0.9.6"
+    ~version:"%%VERSION%%"
     ~doc
     ~exits:Cmd.[
       Exit.info 0 ~doc:"if all files were parsed successfully.";
@@ -59,7 +59,7 @@ let files =
   let doc = "A list of files to parse. If no files are provided, reads from stdin." in
   Arg.(value & pos_all non_dir_file ["-"] & info [] ~docv:"FILE(S)" ~doc)
 
-let cmd = Cmd.v info files
+let cmd = Cmd.v info Term.(const do_parse $ files)
 
 let () = match Cmd.eval_value cmd with
 | Ok _ -> exit 0

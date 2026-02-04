@@ -1,9 +1,46 @@
+(data_only_dirs libpg_query)
+
+; Load OCaml's Makefile.config to get the correct AR/ARCMD
+
+(rule
+ (deps
+  (:conf %{ocaml_where}/Makefile.config))
+ (action
+  (with-stdout-to
+   arcmd
+   (bash "grep '^ARCMD=' %{conf} | cut -d'=' -f2"))))
+
+(rule
+ (action
+  (with-stdout-to
+   jobs
+   ; conservative number of concurrent jobs
+   (bash "opam var jobs 2>/dev/null || echo 2"))))
+
+(rule
+ (action
+  (with-stdout-to
+   makecmd
+   ; libpg_query requires GNU Make (doesn't build with BSD Make)
+   (bash "command -v gmake || command -v make"))))
+
 (rule
  (deps
   (source_tree libpg_query))
- (targets libpg_query.a)
+ (target libpg_query.a)
  (action
-  (copy libpg_query/libpg_query.a libpg_query.a)))
+  (no-infer
+   (progn
+    (chdir
+     libpg_query
+     (run
+      "%{read-lines:makecmd}"
+      -j%{read-lines:jobs}
+      build
+      "CC=%{ocaml-config:c_compiler}"
+      ; libpq_query 17-6.2.2 doesn't separate AR and ARFLAGS
+      "AR=%{read-strings:arcmd} rs"))
+    (copy libpg_query/libpg_query.a libpg_query.a)))))
 
 (library
  (name pg_query)
